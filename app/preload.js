@@ -1,0 +1,26 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('mirror', {
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  saveSettings: (s) => ipcRenderer.invoke('save-settings', s),
+  start: (s) => ipcRenderer.invoke('start-engine', s),
+  stop: () => ipcRenderer.invoke('stop-engine'),
+  running: () => ipcRenderer.invoke('engine-running'),
+  diagnostics: () => ipcRenderer.invoke('diagnostics'),
+  openFirewall: () => ipcRenderer.invoke('open-firewall'),
+  openEngineFolder: () => ipcRenderer.invoke('open-engine-folder'),
+  openEngineNative: () => ipcRenderer.invoke('open-engine-native'),
+  obsPipelines: (s) => ipcRenderer.invoke('obs-pipelines', s),
+  obsStatus: () => ipcRenderer.invoke('obs-status'),
+  installObsPlugin: () => ipcRenderer.invoke('install-obs-plugin'),
+  launchObs: () => ipcRenderer.invoke('launch-obs'),
+  onLog: (cb) => ipcRenderer.on('engine-log', (_e, t) => cb(t)),
+  onStatus: (cb) => ipcRenderer.on('engine-status', (_e, r) => cb(r)),
+  androidDevices: () => ipcRenderer.invoke('android-devices'),
+  androidWifiEnable: () => ipcRenderer.invoke('android-wifi-enable'),
+  androidStart: (s) => ipcRenderer.invoke('start-android', s),
+  androidStop: () => ipcRenderer.invoke('stop-android'),
+  androidRunning: () => ipcRenderer.invoke('android-running'),
+  onAndroidLog: (cb) => ipcRenderer.on('android-log', (_e, t) => cb(t)),
+  onAndroidStatus: (cb) => ipcRenderer.on('android-status', (_e, r) => cb(r)),
+});

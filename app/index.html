@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kizuna Mirror</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="aurora"></div>
+
+<header>
+  <div class="brand">
+    <div class="logo">K</div>
+    <div>
+      <h1>Kizuna Mirror <span class="ver">v1.2</span></h1>
+      <p>Mirroring iPhone ke Windows &middot; AirPlay &middot; sampai 1080p60</p>
+    </div>
+  </div>
+  <div id="statusPill" class="pill off"><span class="dot"></span><span id="statusText">Berhenti</span></div>
+</header>
+
+<main>
+  <div class="tabs">
+    <button id="tabIphone" class="tab active">&#63743; iPhone (AirPlay)</button>
+    <button id="tabAndroid" class="tab">&#129302; Android (USB / Wi-Fi)</button>
+  </div>
+
+  <div id="panelIphone">
+  <section class="card hero">
+    <div class="hero-left">
+      <div class="label">Nama receiver yang muncul di iPhone</div>
+      <input id="receiverName" type="text" maxlength="40" value="Kizuna Mirror">
+      <div class="steps">
+        <div><b>1.</b> PC &amp; iPhone di Wi-Fi yang sama (5 GHz buat 1080p60)</div>
+        <div><b>2.</b> Klik <b>Mulai Receiver</b> di bawah</div>
+        <div><b>3.</b> Di iPhone: geser Control Center &gt; <b>Screen Mirroring</b> &gt; pilih nama di atas</div>
+        <div><b>4.</b> Jendela mirroring muncul sendiri &mdash; bisa fullscreen &amp; di-capture OBS</div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <button id="btnStart" class="btn primary big">&#9654; Mulai Receiver</button>
+      <button id="btnStop" class="btn danger big" disabled>&#9632; Berhenti</button>
+      <button id="btnFirewall" class="btn ghost">&#128737; Buka Firewall (sekali saja)</button>
+      <button id="btnDiag" class="btn ghost">&#128269; Diagnostik</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Mode Output</h2>
+    <div class="chips" id="modes">
+      <button data-mode="window" class="chip active">Mode Jendela<span>Nonton langsung di PC. Jendela video engine muncul terpisah.</span></button>
+      <button data-mode="obs" class="chip">Mode OBS Langsung &#11088;<span>Buat streaming. Video+audio dikirim lurus ke OBS — TANPA Window/Game Capture (fix layar hitam).</span></button>
+    </div>
+    <div id="obsPanel" class="obs-panel hidden">
+      <div class="obs-steps">
+        <div><b>1.</b> Klik <b>Pasang Plugin OBS</b> (sekali saja, klik Yes di UAC), tutup OBS total bila sedang terbuka</div>
+        <div><b>2.</b> Klik <b>Buka OBS (mode Kizuna)</b> — OBS harus dibuka dari sini supaya plugin menemukan runtime GStreamer</div>
+        <div><b>3.</b> Di OBS: Sources &gt; + &gt; <b>GStreamer Source</b>, tempel pipeline di bawah ini ke kolom pipeline-nya</div>
+        <div><b>4.</b> Di Kizuna Mirror pilih mode ini lalu <b>Mulai Receiver</b>, sambungkan iPhone seperti biasa — gambar masuk langsung di source itu</div>
+      </div>
+      <label class="label">Pipeline OBS (video + audio, satu source)</label>
+      <textarea id="pipelineCombined" readonly rows="3"></textarea>
+      <div class="obs-btns">
+        <button id="btnCopyPipeline" class="btn small primary">Salin Pipeline</button>
+        <button id="btnInstallPlugin" class="btn small">&#128268; Pasang Plugin OBS</button>
+        <button id="btnLaunchObs" class="btn small">&#127909; Buka OBS (mode Kizuna)</button>
+        <span id="obsStatus" class="obs-status"></span>
+      </div>
+      <p class="hint">Di mode ini TIDAK ada jendela video di desktop — itu normal, gambarnya hanya ada di OBS. Audio iPhone ikut masuk lewat source yang sama.</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Kualitas</h2>
+    <div class="chips" id="presets">
+      <button data-preset="720p60" class="chip">720p &middot; 60fps<span>Ringan, Wi-Fi ramai</span></button>
+      <button data-preset="1080p30" class="chip">1080p &middot; 30fps<span>Stabil, hemat bandwith</span></button>
+      <button data-preset="1080p60" class="chip active">1080p &middot; 60fps<span>Rekomendasi &middot; HD mulus</span></button>
+      <button data-preset="4k60" class="chip">4K &middot; 60fps<span>H.265 &middot; eksperimental</span></button>
+    </div>
+    <div class="toggles">
+      <label class="toggle"><input type="checkbox" id="optFullscreen"><span></span>Fullscreen saat mirroring</label>
+      <label class="toggle"><input type="checkbox" id="optHw" checked><span></span>Decode hardware D3D11 (GPU, lebih ringan)</label>
+      <label class="toggle"><input type="checkbox" id="optAudio" checked><span></span>Audio dari iPhone keluar di PC</label>
+      <label class="toggle"><input type="checkbox" id="optFpsData" checked><span></span>Tampilkan data FPS di log</label>
+      <label class="toggle"><input type="checkbox" id="optPin"><span></span>PIN 4 digit
+        <input id="pinCode" type="text" inputmode="numeric" maxlength="4" placeholder="1234" class="pin">
+      </label>
+    </div>
+    <p class="hint">Catatan jujur: resolusi/fps final ditentukan iPhone &amp; jaringanmu. 1080p60 butuh Wi-Fi 5 GHz dan sinyal bagus. Konten DRM (Netflix, Apple TV+) akan tampil hitam di semua receiver non-Apple &mdash; itu proteksi dari Apple, bukan bug.</p>
+    <p class="hint"><b>Kalau tetap pakai Mode Jendela + OBS Window Capture:</b> matikan Fullscreen di atas (fullscreen = penyebab klasik layar hitam di OBS), jalankan OBS sebagai Administrator, dan di properti Window Capture set Capture Method ke <b>Windows 10 (1903 and up)</b>. Game Capture memang tidak cocok untuk jendela ini. Cara paling pasti tetap Mode OBS Langsung.</p>
+  </section>
+
+  <section class="card warn">
+    <h2>&#9888; iOS 27 &mdash; perlu tes di iPhone kamu</h2>
+    <p>Ada laporan di proyek UxPlay bahwa di iOS 27 mirroring kadang connect tapi video tidak masuk. Kalau itu terjadi di iPhone kamu: receiver tetap muncul &amp; terhubung, tapi jendela video kosong. Kabari aku dari chat kalau begitu &mdash; kita coba preset lain / jalur cadangan. Untuk iOS 26 ke bawah jalur ini normal.</p>
+  </section>
+
+  </div><!-- /panelIphone -->
+
+  <div id="panelAndroid" class="hidden">
+  <section class="card hero">
+    <div class="hero-left">
+      <div class="label">Koneksi HP Android</div>
+      <div class="chips" id="aConn">
+        <button data-conn="usb" class="chip active">USB<span>Paling stabil buat 1080p60</span></button>
+        <button data-conn="wifi" class="chip">Wi-Fi<span>Tanpa kabel, jaringan 5 GHz</span></button>
+      </div>
+      <div class="steps">
+        <div><b>1.</b> Di HP: Pengaturan &gt; Tentang ponsel &gt; tap Nomor versi 7x, lalu Opsi Pengembang &gt; aktifkan <b>USB Debugging</b></div>
+        <div><b>2.</b> Colok USB, terima prompt "Izinkan USB debugging" di HP (centang Selalu izinkan)</div>
+        <div><b>3.</b> Klik <b>Mulai Mirroring Android</b> — jendela HP muncul dan bisa dikontrol pakai mouse/keyboard PC</div>
+        <div><b>Xiaomi:</b> kalau kontrol tidak jalan, aktifkan juga "USB debugging (Security settings)" di Opsi Pengembang</div>
+      </div>
+      <div id="wifiRow" class="wifi-row hidden">
+        <input id="aWifiIp" type="text" placeholder="IP HP, contoh 192.168.1.20">
+        <button id="btnWifiEnable" class="btn">Aktifkan Wi-Fi via USB</button>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div id="aStatusPill" class="pill off"><span class="dot"></span><span id="aStatusText">Berhenti</span></div>
+      <button id="btnAStart" class="btn primary big">&#9654; Mulai Mirroring Android</button>
+      <button id="btnAStop" class="btn danger big" disabled>&#9632; Berhenti</button>
+      <button id="btnDevices" class="btn ghost">&#128269; Deteksi Perangkat</button>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Kualitas Android</h2>
+    <div class="chips" id="aPresets">
+      <button data-apreset="a720p60" class="chip">720p &middot; 60fps<span>Ringan &middot; 8 Mbps</span></button>
+      <button data-apreset="1080p60" class="chip active">1080p &middot; 60fps<span>Rekomendasi &middot; 16 Mbps</span></button>
+      <button data-apreset="1080p120" class="chip">1080p &middot; 120fps<span>Buat HP 120Hz &middot; 24 Mbps</span></button>
+      <button data-apreset="native" class="chip">Native<span>Resolusi penuh HP &middot; 32 Mbps</span></button>
+    </div>
+    <div class="chips" id="aCodec" style="margin-top:10px">
+      <button data-codec="h264" class="chip active">Codec H.264<span>Paling kompatibel</span></button>
+      <button data-codec="h265" class="chip">Codec H.265<span>Lebih tajam di bitrate sama, HP flagship</span></button>
+    </div>
+    <div class="toggles">
+      <label class="toggle"><input type="checkbox" id="aAudio" checked><span></span>Audio HP keluar di PC (Android 11+)</label>
+      <label class="toggle"><input type="checkbox" id="aControl" checked><span></span>Kontrol HP pakai mouse &amp; keyboard PC</label>
+      <label class="toggle"><input type="checkbox" id="aFullscreen"><span></span>Fullscreen</label>
+      <label class="toggle"><input type="checkbox" id="aScreenOff"><span></span>Matikan layar HP saat mirroring (hemat baterai)</label>
+      <label class="toggle"><input type="checkbox" id="aStayAwake" checked><span></span>Jaga layar HP tetap menyala</label>
+      <label class="toggle"><input type="checkbox" id="aRecord"><span></span>Rekam ke MP4 (tersimpan di Videos\KizunaMirror)</label>
+    </div>
+    <p class="hint"><b>OBS:</b> jendela mirroring Android ini judulnya "Kizuna Mirror - Android" dan normal ditangkap pakai <b>Window Capture</b> biasa — tidak ada kasus hitam kayak mode jendela iPhone. Buat hasil paling stabil di 1080p60, pakai koneksi USB.</p>
+  </section>
+  </div><!-- /panelAndroid -->
+
+  <section class="card">
+    <div class="log-head">
+      <h2>Log</h2>
+      <div>
+        <button id="btnNative" class="btn small ghost">Buka UI bawaan engine</button>
+        <button id="btnFolder" class="btn small ghost">Folder engine</button>
+        <button id="btnClear" class="btn small ghost">Bersihkan</button>
+      </div>
+    </div>
+    <pre id="log"></pre>
+  </section>
+
+  <footer>iPhone: UxPlay 1.73.6 (GPLv3) &middot; Android: scrcpy 5.0.1 (Genymobile, Apache-2.0) &middot; UI oleh Kizuna untuk Randy</footer>
+</main>
+
+<script src="renderer.js"></script>
+</body>
+</html>

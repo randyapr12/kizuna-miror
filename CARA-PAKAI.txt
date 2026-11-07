@@ -1,0 +1,77 @@
+KIZUNA MIRROR v1.2 — Mirroring iPhone & Android ke Windows
+============================================================
+
+v1.2: sekarang SATU aplikasi untuk dua-duanya.
+Tab "iPhone (AirPlay)" dan tab "Android (USB / Wi-Fi)" di bagian atas.
+
+================================================================
+BAGIAN ANDROID (BARU) — target 1080p60
+================================================================
+Engine: scrcpy 5.0.1 (resmi Genymobile, open-source).
+Bisa dikontrol balik: mouse & keyboard PC mengendalikan HP.
+Audio ikut ke PC untuk Android 11+. Rekam MP4 tersedia.
+
+PERSIAPAN DI HP (sekali saja)
+1. Pengaturan > Tentang ponsel > tap "Nomor versi" 7x
+   (di Xiaomi: Pengaturan > Tentang ponsel > tap versi OS/HyperOS)
+2. Opsi Pengembang muncul > aktifkan "USB Debugging".
+3. Khusus Xiaomi: kalau mouse/keyboard tidak bisa mengontrol HP,
+   aktifkan juga "USB debugging (Security settings)" di Opsi Pengembang
+   (mungkin minta akun Mi / tunggu hitung mundur).
+
+CARA PAKAI — USB (disarankan untuk 1080p60)
+1. Colok HP ke PC dengan kabel DATA.
+2. Di HP muncul prompt "Izinkan USB debugging?" > centang
+   "Selalu izinkan dari komputer ini" > Izinkan.
+3. Di Kizuna Mirror tab Android: koneksi USB, preset 1080p60,
+   klik "Mulai Mirroring Android".
+4. Jendela "Kizuna Mirror - Android" muncul. Selesai.
+
+CARA PAKAI — WI-FI (tanpa kabel)
+1. Colok USB dulu sekali, klik "Aktifkan Wi-Fi via USB" di aplikasi
+   (IP HP terisi otomatis), lalu pilih koneksi Wi-Fi.
+2. Kabel boleh dicabut. Klik "Mulai Mirroring Android".
+3. HP dan PC harus di Wi-Fi yang sama (5 GHz untuk 1080p60).
+
+PRESET ANDROID
+- 1080p 60fps  = rekomendasi (16 Mbps)
+- 720p 60fps   = ringan (8 Mbps), buat Wi-Fi ramai / HP lama
+- 1080p 120fps = buat HP layar 120Hz (24 Mbps)
+- Native       = resolusi penuh HP (32 Mbps)
+Codec H.265 lebih tajam di bitrate yang sama untuk HP flagship;
+H.264 paling kompatibel. Rekaman MP4 tersimpan di Videos\KizunaMirror.
+
+OBS (Android): tangkap jendela "Kizuna Mirror - Android" dengan
+Window Capture biasa — normal, tidak hitam seperti mode jendela iPhone.
+
+================================================================
+BAGIAN iPHONE — MODE OBS LANGSUNG (fix layar hitam, dari v1.1)
+================================================================
+Window/Game Capture di OBS TIDAK bisa menangkap jendela video engine
+iPhone (hasilnya hitam). Pakai "Mode OBS Langsung" di tab iPhone:
+video + audio dikirim lurus ke OBS lewat RTP, tanpa capture jendela.
+1. Tab iPhone > pilih "Mode OBS Langsung".
+2. Plugin obs-gstreamer SUDAH terpasang di OBS kamu oleh Kizuna
+   (kalau ganti PC, klik "Pasang Plugin OBS" sekali, klik Yes di UAC).
+3. Tutup OBS total, buka lagi lewat tombol "Buka OBS (mode Kizuna)".
+4. OBS: Sources > + > "GStreamer Source" > tempel pipeline dari
+   panel Mode OBS di aplikasi (tombol "Salin Pipeline").
+5. Klik "Mulai Receiver", sambungkan iPhone (Screen Mirroring).
+Di mode ini tidak ada jendela video di desktop — itu normal.
+
+MODE JENDELA iPHONE (nonton di PC saja)
+1. Jalankan KizunaMirror.exe (SmartScreen: More info > Run anyway).
+2. Sekali saja: klik "Buka Firewall" > Yes di UAC.
+3. "Mulai Receiver" > iPhone: Control Center > Screen Mirroring.
+Kalau tetap mau Window Capture dari mode jendela: MATIKAN Fullscreen,
+OBS jalankan sebagai Administrator, Capture Method "Windows 10
+(1903 and up)". Game Capture tidak cocok untuk jendela ini.
+
+CATATAN UMUM
+- Konten DRM (Netflix, Apple TV+) tampil hitam di mirroring iPhone —
+  proteksi Apple. (Di Android, aplikasi yang memblokir perekaman layar
+  juga bisa tampil hitam — itu kebijakan aplikasinya.)
+- iPhone AirPlay satu arah (tanpa kontrol balik); Android dua arah.
+
+Engine: UxPlay (GPLv3) • scrcpy (Apache-2.0) • obs-gstreamer (GPLv2)
+Detail & sumber: ENGINE-NOTICE.txt

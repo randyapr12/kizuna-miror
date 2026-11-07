@@ -1,0 +1,51 @@
+Kizuna Mirror 1.0.0 — catatan engine
+=====================================
+
+Aplikasi UI "Kizuna Mirror" adalah launcher/controller buatan Kizuna untuk Randy.
+Mesin mirroring (AirPlay receiver) di dalamnya adalah perangkat lunak open-source:
+
+- UxPlay 1.73.6 — FDH2/UxPlay — lisensi GPLv3
+  Sumber: https://github.com/FDH2/UxPlay
+- Paket Windows: uxplay-windows 2.0.0.1736 — leapbtw/uxplay-windows — lisensi GPLv3
+  Sumber: https://github.com/leapbtw/uxplay-windows
+  File asli: uxplay-windows.zip (113.529.789 byte)
+  SHA-256: 9d3a51c15fc9db857351195e7eb7bbb21700d9ae25d936a54bcf8536b62cca18
+  (terverifikasi cocok dengan digest resmi di GitHub Releases saat diunduh 5 Nov 2026)
+- Komponen lain di folder engine (GStreamer, Qt6, FFmpeg, mDNSResponder, dll.)
+  mengikuti lisensi masing-masing; lihat LICENSE.rtf di folder engine.
+
+Kode sumber lengkap engine tersedia di tautan di atas sesuai GPLv3.
+Kizuna Mirror mengendalikan engine lewat argumen CLI dan file
+konfigurasi ~/.uxplayrc yang ditulis saat receiver dimulai.
+
+TAMBAHAN v1.1 (untuk Mode OBS Langsung, opsi -vrtp/-artp UxPlay):
+Paket uxplay-windows di atas memangkas plugin GStreamer-nya, sehingga
+plugin RTP/UDP yang dibutuhkan -vrtp/-artp tidak ikut. Kizuna Mirror
+v1.1 menambahkan file berikut dari paket resmi MSYS2 UCRT64 versi
+GStreamer yang sama persis (1.28.1):
+- lib/gstreamer-1.0/libgstrtp.dll, libgstudp.dll, libgstrtpmanager.dll
+  (mingw-w64-ucrt-x86_64-gst-plugins-good-1.28.1-1, GPLv2+/LGPL)
+- libgstrtp-1.0-0.dll, libgstsdp-1.0-0.dll
+  (mingw-w64-ucrt-x86_64-gst-plugins-base-1.28.1-1, LGPL)
+- libgstnet-1.0-0.dll
+  (mingw-w64-ucrt-x86_64-gstreamer-1.28.1-1, LGPL)
+Sumber: https://repo.msys2.org/mingw/ucrt64/
+Selain itu engine uxplay-windows.exe dan DLL lainnya tidak dimodifikasi.
+
+Plugin OBS: obs-gstreamer v0.4.2 (fzwoch, GPL-2.0)
+- obs-gstreamer.dll (41 KB, dari obs-gstreamer-mingw-x86_64.zip rilis resmi)
+  Sumber: https://github.com/fzwoch/obs-gstreamer/releases/tag/v0.4.2
+- Plugin ini memakai runtime GStreamer dari folder engine Kizuna Mirror
+  (OBS dibuka lewat tombol "Buka OBS (mode Kizuna)" yang mengatur
+  PATH + GST_PLUGIN_PATH ke folder engine).
+
+TAMBAHAN v1.2 (Tab Android):
+Engine mirroring Android: scrcpy v5.0.1 — Genymobile/scrcpy — Apache-2.0
+- File asli: scrcpy-win64-v5.0.1.zip (11.264.634 byte)
+  SHA-256: b12a2c4ee8be317422451fc7dcf8ee20a71b5ea7ef9ad73ddd825a25316227a5
+  (terverifikasi cocok dengan digest resmi GitHub Releases, diunduh 6 Nov 2026)
+  Sumber: https://github.com/Genymobile/scrcpy/releases/tag/v5.0.1
+- Isi folder "android-engine" adalah isi utuh zip resmi tersebut
+  (scrcpy.exe, adb.exe, scrcpy-server, SDL3, FFmpeg libs, LICENSE.txt),
+  tidak dimodifikasi. Lisensi komponen pihak ketiga (adb, SDL, FFmpeg,
+  libusb) mengikuti lisensi masing-masing di dalam paket scrcpy.

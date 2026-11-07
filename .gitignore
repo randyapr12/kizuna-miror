@@ -1,0 +1,23 @@
+# dependencies & build output
+node_modules/
+app/node_modules/
+app/dist/
+dist/
+
+# downloaded engines (fetched by fetch-engines.* — see ENGINE-NOTICE.txt)
+engine/
+scrcpy/
+engine-src/
+scrcpy-src/
+
+# release archives
+*.zip
+
+# misc
+.DS_Store
+Thumbs.db
+.uxplayrc
+*.log
+
+# fetched binary (via fetch-engines.*)
+app/obs-plugin/
